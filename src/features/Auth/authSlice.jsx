@@ -6,6 +6,7 @@ const initialState = {
   user: null,
   isLoading: false,
   error: null,
+  emailInUse: false
 };
 
 export const signInWithGoogle = createAsyncThunk(
@@ -45,7 +46,7 @@ export const signInWithEmailPassword = createAsyncThunk(
 
 export const registerWithEmailAndPassword = createAsyncThunk(
   "auth/registerWithEmailAndPassword",
-  async ({ email, password }, { rejectWithValue }) => {
+  async ({ email, password }, { rejectWithValue, dispatch }) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -56,10 +57,15 @@ export const registerWithEmailAndPassword = createAsyncThunk(
       };
       return authInfo;
     } catch (error) {
-      return rejectWithValue(error.message);
+      if (error.code === "auth/email-already-in-use") {
+        dispatch(setEmailInUse(true)); // Dispatch action to set emailInUse to true
+      }
+      return rejectWithValue(error.message );
     }
   }
 );
+
+
 
 export const signOutUser = createAsyncThunk(
   "auth/signOutUser",
@@ -77,7 +83,9 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // You can add additional reducers here if needed
+    setEmailInUse(state, action) {
+      state.emailInUse = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -124,12 +132,20 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload;
         state.error = null;
+ 
+        
       })
       .addCase(registerWithEmailAndPassword.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+        if (action.payload.code === "auth/email-already-in-use") {
+          state.emailInUse = true;
+        }
       });
+      
   },
 });
+
+export const { setEmailInUse } = authSlice.actions;
 
 export default authSlice.reducer;
