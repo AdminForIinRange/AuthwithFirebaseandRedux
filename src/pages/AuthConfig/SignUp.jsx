@@ -2,59 +2,112 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
-  Box,
-  Button,
-  Checkbox,
-  Divider,
-  ButtonGroup,
-  FormControl,
-
-  FormLabel,
-  HStack,
+  Step,
+  StepDescription,
   Input,
-  Progress,
-  Stack,
+  StepIcon,
+  StepIndicator,
+  StepNumber,
+  StepSeparator,
+  StepStatus,
+  StepTitle,
+  Stepper,
+  HStack,
+  Heading,
+  InputGroup,
+  Card,
+  CardHeader,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
+  Checkbox,
+  CardBody,
+  Highlight,
+  Link,
+  CardFooter,
+  Divider,
+  AspectRatio,
+  ButtonGroup,
+  Center,
+  Flex,
+  Button,
   Text,
-  useToast,
+  Stack,
+  Box,
+  useBreakpointValue,
+  Menu,
+  MenuButton,
+  VStack,
+  MenuList,
+  MenuItem,
+  Wrap,
+  List,
+  ListItem,
+  ListIcon,
+  OrderedList,
+  UnorderedList,
+  Grid,
+  GridItem,
+  Image,
+  InputLeftAddon,
+  InputRightAddon,
+  useSteps,
+  AbsoluteCenter,
+  Avatar,
+  AvatarBadge,
+  Progress,
+  AvatarGroup,
+  Container,
   VisuallyHidden,
+  Spacer,
+  Icon,
+  TagLabel,
 } from "@chakra-ui/react";
-import { signInWithGoogle, registerWithEmailAndPassword, setEmailInUse } from "../../features/Auth/authSlice";
+import {
+  signInWithGoogle,
+  registerWithEmailAndPassword,
+  setEmailInUse,
+  sethasNotPasswordVerified,
+} from "../../features/Auth/authSlice";
 import { GoogleIcon } from "./ProviderIcons";
 
-
 export default function SignUp() {
-    const toast = useToast();
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user, isLoading, error, emailInUse } = useSelector((state) => state.auth);
+  const { user, isLoading, error, emailInUse, hasNotPasswordVerified } = useSelector(
+    (state) => state.auth
+  );
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rePassword, setRePassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [EmailInuseLocal, setEmailInuseLocal] = useState(false);
-
-  
 
   const handleSignInWithGoogle = () => {
     dispatch(signInWithGoogle());
-
-
-    
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
- dispatch(registerWithEmailAndPassword({ email, password }));
-  }
-  
+    console.log(password, rePassword)
+    if (password === rePassword) {
+      dispatch(registerWithEmailAndPassword({ email, password }));
+      dispatch(sethasNotPasswordVerified(false));
+    } else {
+        
+      dispatch(sethasNotPasswordVerified(true));
+
+      console.log(password, rePassword)
+    }
+  };
+//when testing the length of your testing password matters
 
   useEffect(() => {
     if (emailInUse) {
       dispatch(setEmailInUse(true));
     }
   }, [emailInUse, dispatch]);
-
 
   useEffect(() => {
     if (user) {
@@ -72,12 +125,12 @@ export default function SignUp() {
       mt={"30px"}
       bgColor={"white"}
       w={"600px"}
-      h={"450px"}
+      h={"100%"}
       p={"3%"}
     >
       <form onSubmit={handleSubmit}>
         <FormControl>
-          <FormLabel htmlFor="email"> Email {emailInUse  ? "The Email You Have Provided is in Use": ""}</FormLabel>
+          <FormLabel htmlFor="email"> Email </FormLabel>
           <Input
             id="email"
             type="email"
@@ -86,7 +139,27 @@ export default function SignUp() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          
+          {emailInUse ? (
+            <>
+              <Box
+                w={"100%"}
+                h={"30px"}
+                bg={"#FEEBC8"}
+                mt={"10px"}
+                border={" 2px dotted #F6AD55"}
+              >
+                <HStack justify={"center"}>
+                  <Text fontWeight={450} color={"#DD6B20"}>
+                  The Email you have entered is already Signed Up <Button colorScheme="yellow.100" variant="link" >
+                 Login
+                </Button>
+                  </Text>
+                </HStack>
+              </Box>
+            </>
+          ) : (
+            <></>
+          )}
         </FormControl>
         <FormControl mt={"20px"}>
           <FormLabel htmlFor="password">password</FormLabel>
@@ -100,6 +173,40 @@ export default function SignUp() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </FormControl>
+        <FormControl mt={"20px"}>
+          <FormLabel htmlFor="password">password</FormLabel>
+          <Input
+            id="rePassword"
+            type="password"
+            required
+            autoComplete="current-password"
+            w={"100%"}
+            value={rePassword}
+            onChange={(e) => setRePassword(e.target.value)}
+          />
+        </FormControl>
+
+        {hasNotPasswordVerified ? (
+            <>
+              <Box
+                w={"100%"}
+                h={"30px"}
+                bg={"#FEEBC8"}
+                mt={"10px"}
+                border={" 2px dotted #F6AD55"}
+              >
+                <HStack justify={"center"}>
+                  <Text fontWeight={450} color={"#DD6B20"}>
+                  The Email you have entered is already Signed Up <Button colorScheme="yellow.100" variant="link" >
+                 Login
+                </Button>
+                  </Text>
+                </HStack>
+              </Box>
+            </>
+          ) : (
+            <></>
+          )}
         <HStack mt={"10px"} justify="space-between">
           <Checkbox
             defaultChecked={rememberMe}
@@ -109,6 +216,7 @@ export default function SignUp() {
           </Checkbox>
         </HStack>
         <Stack mt={"20px"} spacing="6">
+        {isLoading && <Progress p={"0px"}  m={"0px"} size="xs" isIndeterminate />}
           <Button type="submit">Sign Up</Button>
           <HStack>
             <Divider />
@@ -119,8 +227,9 @@ export default function SignUp() {
           </HStack>
         </Stack>
       </form>
-      {isLoading && <Progress size="xs" isIndeterminate />}
+
       {error && console.log(error)}
+     
       <HStack justify={"center"} align={"center"} mt={"10px"}>
         <ButtonGroup spacing="4">
           <Button key="Google" w={"100px"} onClick={handleSignInWithGoogle}>

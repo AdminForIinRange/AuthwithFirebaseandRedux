@@ -6,7 +6,10 @@ const initialState = {
   user: null,
   isLoading: false,
   error: null,
-  emailInUse: false
+  emailInUse: false,
+  invalidCredential: false,
+  hasNotPasswordVerified: false
+  
 };
 
 export const signInWithGoogle = createAsyncThunk(
@@ -28,7 +31,7 @@ export const signInWithGoogle = createAsyncThunk(
 
 export const signInWithEmailPassword = createAsyncThunk(
   "auth/signInWithEmailPassword",
-  async ({ email, password }, { rejectWithValue }) => {
+  async ({ email, password }, { rejectWithValue, dispatch }) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -39,7 +42,10 @@ export const signInWithEmailPassword = createAsyncThunk(
       };
       return authInfo;
     } catch (error) {
-      return rejectWithValue(error.message);
+      if (error.code === "auth/invalid-credential") {
+        dispatch(setinvalidCredential(true)); // Dispatch action to set emailInUse to true
+      }
+      return rejectWithValue(error.message );
     }
   }
 );
@@ -86,6 +92,13 @@ const authSlice = createSlice({
     setEmailInUse(state, action) {
       state.emailInUse = action.payload;
     },
+    setinvalidCredential(state, action) {
+      state.invalidCredential = action.payload;
+    },
+
+    sethasNotPasswordVerified(state, action){
+      state.hasNotPasswordVerified = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -124,6 +137,9 @@ const authSlice = createSlice({
       .addCase(signInWithEmailPassword.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+        if (action.payload.code === "auth/invalid-credential") {
+          state.invalidCredential = true;
+        }
       })
       .addCase(registerWithEmailAndPassword.pending, (state) => {
         state.isLoading = true;
@@ -146,6 +162,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setEmailInUse } = authSlice.actions;
+export const { setEmailInUse, setinvalidCredential, sethasNotPasswordVerified } = authSlice.actions;
 
 export default authSlice.reducer;
