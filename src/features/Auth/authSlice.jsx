@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { auth, provider } from "../../Config/Firebase";
-import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from "firebase/auth";
 
 const initialState = {
   user: null,
@@ -8,7 +8,9 @@ const initialState = {
   error: null,
   emailInUse: false,
   invalidCredential: false,
-  hasNotPasswordVerified: false
+  hasNotPasswordVerified: false,
+  signUp: false,
+  forgotPassword: false
   
 };
 
@@ -85,6 +87,22 @@ export const signOutUser = createAsyncThunk(
   }
 );
 
+export const resetPassword = createAsyncThunk(
+  "auth/resetPassword",
+  async (email, { rejectWithValue, dispatch }) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+    console.log(email)
+    dispatch(setForgotPassword(true))
+      return null; // Success, no need to return any data
+    } catch (error) {
+      console.log(email)
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -98,7 +116,17 @@ const authSlice = createSlice({
 
     sethasNotPasswordVerified(state, action){
       state.hasNotPasswordVerified = action.payload;
+    },
+    setsignUp(state) {
+      state.signUp = !state.signUp; // Toggle the value of signUp
     }
+    ,
+    setForgotPassword(state, action) {
+      state.forgotPassword = action.payload; // Toggle the value of signUp
+    }
+    
+    
+
   },
   extraReducers: (builder) => {
     builder
@@ -157,11 +185,25 @@ const authSlice = createSlice({
         if (action.payload.code === "auth/email-already-in-use") {
           state.emailInUse = true;
         }
+      })
+
+      .addCase(resetPassword.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.isLoading = false;
+        state.error = null;
+
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+        
       });
       
   },
 });
 
-export const { setEmailInUse, setinvalidCredential, sethasNotPasswordVerified } = authSlice.actions;
+export const { setEmailInUse, setinvalidCredential, sethasNotPasswordVerified, setsignUp, setForgotPassword } = authSlice.actions;
 
 export default authSlice.reducer;

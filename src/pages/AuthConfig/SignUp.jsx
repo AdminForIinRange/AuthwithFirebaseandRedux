@@ -197,9 +197,7 @@ export default function SignUp() {
               >
                 <HStack justify={"center"}>
                   <Text fontWeight={450} color={"#DD6B20"}>
-                  The Email you have entered is already Signed Up <Button colorScheme="yellow.100" variant="link" >
-                 Login
-                </Button>
+                  The passwords do not match 
                   </Text>
                 </HStack>
               </Box>

@@ -35,6 +35,13 @@ import {
   useBreakpointValue,
   Menu,
   MenuButton,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
   VStack,
   MenuList,
   MenuItem,
@@ -63,10 +70,13 @@ import {
 } from "@chakra-ui/react";
 
 import { GoogleIcon } from "./ProviderIcons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useDisclosure } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  resetPassword,
+  setForgotPassword,
   setinvalidCredential,
+  setsignUp,
   signInWithGoogle,
 } from "../../features/Auth/authSlice";
 import { useNavigate } from "react-router-dom";
@@ -77,9 +87,8 @@ import SignUp from "./SignUp";
 export default function AuthConfig() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user, isLoading, error, invalidCredential } = useSelector(
-    (state) => state.auth
-  );
+  const { user, isLoading, error, invalidCredential, signUp, forgotPassword } =
+    useSelector((state) => state.auth);
 
   const handleSignInWithGoogle = () => {
     dispatch(signInWithGoogle());
@@ -89,7 +98,6 @@ export default function AuthConfig() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [signUp, setSignUp] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -97,11 +105,10 @@ export default function AuthConfig() {
     dispatch(signInWithEmailPassword({ email, password }));
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   dispatch(registerWithEmailAndPassword({ email, password }));
-  // };
-
+  const handelForgotPassword = () => {
+    dispatch(resetPassword(email));
+    console.log(resetPassword(email));
+  };
   useEffect(() => {
     if (invalidCredential) {
       dispatch(setinvalidCredential(true)); // Set hasLoged to true when user is available
@@ -131,7 +138,7 @@ export default function AuthConfig() {
             colorScheme="teal"
             variant="link"
             onClick={() => {
-              setSignUp((prev) => !prev);
+              dispatch(setsignUp());
             }}
           >
             <Link fontSize={"20px"}>
@@ -186,11 +193,14 @@ export default function AuthConfig() {
                   >
                     <HStack justify={"center"}>
                       <Text fontWeight={450} color={"#9B2C2C"}>
-                        Email or Password Incorrect try  <Button colorScheme="red" variant="link" >
-                  Forgot password?
-                </Button> or <Button colorScheme="orange" variant="link" >
-                 Sign Up
-                </Button>
+                        Email or Password Incorrect try{" "}
+                        <Button colorScheme="red" variant="link">
+                          Forgot password?
+                        </Button>{" "}
+                        or{" "}
+                        <Button colorScheme="orange" variant="link">
+                          Sign Up
+                        </Button>
                       </Text>
                     </HStack>
                   </Box>
@@ -228,10 +238,39 @@ export default function AuthConfig() {
                 >
                   Remember me
                 </Checkbox>
-                <Button colorScheme="teal" variant="link" size="sm">
+                <Button
+                  colorScheme="teal"
+                  variant="link"
+                  size="sm"
+                  onClick={handelForgotPassword}
+                >
                   Forgot password?
                 </Button>
               </HStack>
+
+              <Modal isOpen={forgotPassword}>
+                <ModalOverlay />
+                <ModalContent>
+                  <VStack justify={"center"} align={"center"} p={"2%"} mb={"30px"}>
+
+                                      
+                  <Text fontWeight={500} fontSize={"30px"} >🪵</Text>
+
+
+                    <Text fontWeight={500} fontSize={"20px"} >Password Change Request</Text>
+
+                    <Text>You have sumbited a password change request</Text>
+                    <Divider  w={"60%"} />
+                    <Text>We Have emailed a Rest Link to: </Text>
+                    <Text fontSize={"20px"} color={"teal"} >{email}</Text>
+                  </VStack>
+
+                  <ModalCloseButton  onClick={()=>{dispatch(setForgotPassword(false))}}/>
+                 
+
+                 
+                </ModalContent>
+              </Modal>
 
               <Stack mt={"20px"} spacing="6">
                 {isLoading && (
