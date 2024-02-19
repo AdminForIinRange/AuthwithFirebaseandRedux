@@ -75,14 +75,19 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   resetPassword,
   setForgotPassword,
+  setUserData,
   setinvalidCredential,
   setsignUp,
   signInWithGoogle,
+  signOutUser,
 } from "../../features/Auth/authSlice";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailPassword } from "../../features/Auth/authSlice";
 
 import SignUp from "./SignUp";
+import ForgotPassword from "../../components/ForgotPassword";
+import LoginHeading from "../../components/Header";
+import FormSubmit from "../../components/FormSubmit";
 
 export default function AuthConfig() {
   const navigate = useNavigate();
@@ -109,44 +114,29 @@ export default function AuthConfig() {
     dispatch(resetPassword(email));
     console.log(resetPassword(email));
   };
+
   useEffect(() => {
     if (invalidCredential) {
-      dispatch(setinvalidCredential(true)); // Set hasLoged to true when user is available
+      dispatch(setinvalidCredential(true));
     }
   }, [invalidCredential]);
 
   useEffect(() => {
     if (user) {
-      navigate("/home"); // Set hasLoged to true when user is available
+      dispatch(setUserData(user));
+
+      navigate("/home");
+    } else {
+      dispatch(signOutUser());
+      navigate("/");
     }
-  }, [user]);
+  }, [user, dispatch]);
+
+  //clean effcts
 
   return (
     <VStack w={"100%"} h={"100%"} justify={"center"} align={"center"} p={"1%"}>
-      <VStack>
-        <Text fontSize={"50px"}>🪵</Text>
-        <Heading fontSize={"50px"}>
-          {signUp ? <> Sign Up your account </> : <> Login to your account </>}
-        </Heading>
-        <Text fontSize={"20px"}>
-          {signUp ? (
-            <> Already have an account </>
-          ) : (
-            <> Dont have an Account </>
-          )}
-          <Button
-            colorScheme="teal"
-            variant="link"
-            onClick={() => {
-              dispatch(setsignUp());
-            }}
-          >
-            <Link fontSize={"20px"}>
-              {signUp ? <> Log In</> : <> Sign Up </>}
-            </Link>
-          </Button>
-        </Text>
-      </VStack>
+      <LoginHeading signUp={signUp} />
 
       {signUp ? (
         <>
@@ -181,115 +171,9 @@ export default function AuthConfig() {
             h={"100%"}
             p={"3%"}
           >
-            <form onSubmit={handleSubmit}>
-              {invalidCredential ? (
-                <>
-                  <Box
-                    w={"100%"}
-                    h={"30px"}
-                    bg={"#FED7D7"}
-                    mb={"15px"}
-                    border={" 2px dotted #FC8181"}
-                  >
-                    <HStack justify={"center"}>
-                      <Text fontWeight={450} color={"#9B2C2C"}>
-                        Email or Password Incorrect try{" "}
-                        <Button colorScheme="red" variant="link">
-                          Forgot password?
-                        </Button>{" "}
-                        or{" "}
-                        <Button colorScheme="orange" variant="link">
-                          Sign Up
-                        </Button>
-                      </Text>
-                    </HStack>
-                  </Box>
-                </>
-              ) : (
-                <></>
-              )}
-              <FormControl>
-                <FormLabel htmlFor="email"> Email</FormLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  w={"100%"}
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </FormControl>
-              <FormControl mt={"20px"}>
-                <FormLabel htmlFor="password">password</FormLabel>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  autoComplete="current-password"
-                  w={"100%"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </FormControl>
-              <HStack mt={"10px"} justify="space-between">
-                <Checkbox
-                  defaultChecked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                >
-                  Remember me
-                </Checkbox>
-                <Button
-                  colorScheme="teal"
-                  variant="link"
-                  size="sm"
-                  onClick={handelForgotPassword}
-                >
-                  Forgot password?
-                </Button>
-              </HStack>
-
-              <Modal isOpen={forgotPassword}>
-                <ModalOverlay />
-                <ModalContent>
-                  <VStack justify={"center"} align={"center"} p={"2%"} mb={"30px"}>
-
-                                      
-                  <Text fontWeight={500} fontSize={"30px"} >🪵</Text>
-
-
-                    <Text fontWeight={500} fontSize={"20px"} >Password Change Request</Text>
-
-                    <Text>You have sumbited a password change request</Text>
-                    <Divider  w={"60%"} />
-                    <Text>We Have emailed a Rest Link to: </Text>
-                    <Text fontSize={"20px"} color={"teal"} >{email}</Text>
-                  </VStack>
-
-                  <ModalCloseButton  onClick={()=>{dispatch(setForgotPassword(false))}}/>
-                 
-
-                 
-                </ModalContent>
-              </Modal>
-
-              <Stack mt={"20px"} spacing="6">
-                {isLoading && (
-                  <Progress p={"0px"} m={"0px"} size="xs" isIndeterminate />
-                )}
-                <Button type="submit">Sign in</Button>
-
-                <HStack>
-                  <Divider />
-                  <Text textStyle="sm" whiteSpace="nowrap" color="fg.muted">
-                    or continue with
-                  </Text>
-                  <Divider />
-                </HStack>
-              </Stack>
-            </form>
-
-            {/* 
-Create its own Comp as with everything else here */}
+           
+           <FormSubmit
+            />
 
             <HStack justify={"center"} align={"center"} mt={"10px"}>
               <ButtonGroup spacing="4">

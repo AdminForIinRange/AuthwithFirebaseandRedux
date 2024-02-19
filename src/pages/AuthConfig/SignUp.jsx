@@ -75,9 +75,8 @@ import { GoogleIcon } from "./ProviderIcons";
 export default function SignUp() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user, isLoading, error, emailInUse, hasNotPasswordVerified } = useSelector(
-    (state) => state.auth
-  );
+  const { user, isLoading, error, emailInUse, hasNotPasswordVerified, weakPassword } =
+    useSelector((state) => state.auth);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -90,18 +89,17 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(password, rePassword)
+    console.log(password, rePassword);
     if (password === rePassword) {
       dispatch(registerWithEmailAndPassword({ email, password }));
       dispatch(sethasNotPasswordVerified(false));
     } else {
-        
       dispatch(sethasNotPasswordVerified(true));
 
-      console.log(password, rePassword)
+      console.log(password, rePassword);
     }
   };
-//when testing the length of your testing password matters
+  //when testing the length of your testing password matters
 
   useEffect(() => {
     if (emailInUse) {
@@ -150,9 +148,10 @@ export default function SignUp() {
               >
                 <HStack justify={"center"}>
                   <Text fontWeight={450} color={"#DD6B20"}>
-                  The Email you have entered is already Signed Up <Button colorScheme="yellow.100" variant="link" >
-                 Login
-                </Button>
+                    The Email you have entered is already Signed Up{" "}
+                    <Button colorScheme="yellow.100" variant="link">
+                      Login
+                    </Button>
                   </Text>
                 </HStack>
               </Box>
@@ -173,6 +172,24 @@ export default function SignUp() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </FormControl>
+
+       { weakPassword ? <Box
+          w={"100%"}
+          h={"30px"}
+          bg={"#FEEBC8"}
+          mt={"10px"}
+          border={" 2px dotted #F6AD55"}
+        >
+          <HStack justify={"center"}>
+            <Text fontWeight={450} color={"#DD6B20"}>
+              Password should be at least 6 characters
+            </Text>
+          </HStack>
+        </Box>
+         :
+         <></>
+}
+
         <FormControl mt={"20px"}>
           <FormLabel htmlFor="password">password</FormLabel>
           <Input
@@ -187,24 +204,24 @@ export default function SignUp() {
         </FormControl>
 
         {hasNotPasswordVerified ? (
-            <>
-              <Box
-                w={"100%"}
-                h={"30px"}
-                bg={"#FEEBC8"}
-                mt={"10px"}
-                border={" 2px dotted #F6AD55"}
-              >
-                <HStack justify={"center"}>
-                  <Text fontWeight={450} color={"#DD6B20"}>
-                  The passwords do not match 
-                  </Text>
-                </HStack>
-              </Box>
-            </>
-          ) : (
-            <></>
-          )}
+          <>
+            <Box
+              w={"100%"}
+              h={"30px"}
+              bg={"#FEEBC8"}
+              mt={"10px"}
+              border={" 2px dotted #F6AD55"}
+            >
+              <HStack justify={"center"}>
+                <Text fontWeight={450} color={"#DD6B20"}>
+                  The passwords do not match
+                </Text>
+              </HStack>
+            </Box>
+          </>
+        ) : (
+          <></>
+        )}
         <HStack mt={"10px"} justify="space-between">
           <Checkbox
             defaultChecked={rememberMe}
@@ -214,7 +231,9 @@ export default function SignUp() {
           </Checkbox>
         </HStack>
         <Stack mt={"20px"} spacing="6">
-        {isLoading && <Progress p={"0px"}  m={"0px"} size="xs" isIndeterminate />}
+          {isLoading && (
+            <Progress p={"0px"} m={"0px"} size="xs" isIndeterminate />
+          )}
           <Button type="submit">Sign Up</Button>
           <HStack>
             <Divider />
@@ -227,7 +246,7 @@ export default function SignUp() {
       </form>
 
       {error && console.log(error)}
-     
+
       <HStack justify={"center"} align={"center"} mt={"10px"}>
         <ButtonGroup spacing="4">
           <Button key="Google" w={"100px"} onClick={handleSignInWithGoogle}>

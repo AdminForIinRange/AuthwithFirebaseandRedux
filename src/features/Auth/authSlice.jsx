@@ -10,7 +10,9 @@ const initialState = {
   invalidCredential: false,
   hasNotPasswordVerified: false,
   signUp: false,
-  forgotPassword: false
+  forgotPassword: false,
+  weakPassword: false
+  
   
 };
 
@@ -24,6 +26,7 @@ export const signInWithGoogle = createAsyncThunk(
         email: results.user.email,
         isAuth: true,
       };
+      localStorage.setItem('authToken', authInfo.userID);
       return authInfo;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -42,6 +45,7 @@ export const signInWithEmailPassword = createAsyncThunk(
         email: user.email,
         isAuth: true,
       };
+      localStorage.setItem('authToken', authInfo.userID);
       return authInfo;
     } catch (error) {
       if (error.code === "auth/invalid-credential") {
@@ -68,6 +72,9 @@ export const registerWithEmailAndPassword = createAsyncThunk(
       if (error.code === "auth/email-already-in-use") {
         dispatch(setEmailInUse(true)); // Dispatch action to set emailInUse to true
       }
+      if (error.code === "auth/weak-password") {
+        dispatch(setweakPassword(true)); // Dispatch action to set emailInUse to true
+      }
       return rejectWithValue(error.message );
     }
   }
@@ -80,6 +87,7 @@ export const signOutUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       await signOut(auth);
+      localStorage.removeItem('authToken');
       // No need to log state.user here, as it's not relevant to the functionality
     } catch (error) {
       return rejectWithValue(error.message);
@@ -123,7 +131,13 @@ const authSlice = createSlice({
     ,
     setForgotPassword(state, action) {
       state.forgotPassword = action.payload; // Toggle the value of signUp
-    }
+    },
+    setUserData(state, action) {
+      state.user = action.payload;
+    },
+    setweakPassword(state, action) {
+      state.weakPassword = action.payload;
+    },
     
     
 
@@ -168,6 +182,7 @@ const authSlice = createSlice({
         if (action.payload.code === "auth/invalid-credential") {
           state.invalidCredential = true;
         }
+       
       })
       .addCase(registerWithEmailAndPassword.pending, (state) => {
         state.isLoading = true;
@@ -184,6 +199,9 @@ const authSlice = createSlice({
         state.error = action.payload;
         if (action.payload.code === "auth/email-already-in-use") {
           state.emailInUse = true;
+        }
+        if (action.payload.code === "auth/weak-password") {
+          state.weakPassword = true;
         }
       })
 
@@ -204,6 +222,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setEmailInUse, setinvalidCredential, sethasNotPasswordVerified, setsignUp, setForgotPassword } = authSlice.actions;
+export const {setUserData , setweakPassword, setEmailInUse, setinvalidCredential, sethasNotPasswordVerified, setsignUp, setForgotPassword } = authSlice.actions;
 
 export default authSlice.reducer;
