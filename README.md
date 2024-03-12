@@ -8,6 +8,11 @@ The authentication page allows users to sign up, log in, and manage their accoun
 
 The project leverages Firebase's authentication services, ensuring robust and secure user authentication. Redux is employed for efficient state management, providing a centralized and predictable way to manage the application's state.
 
+### Live Deploy
+
+https://logintemplate-8b8e2.web.app
+
+
 #### Key Features
 
 - User registration and login with email and password
