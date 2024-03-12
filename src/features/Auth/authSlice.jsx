@@ -191,7 +191,8 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload;
         state.error = null;
- 
+        state.emailInUse = true;
+        state.weakPassword = true;
         
       })
       .addCase(registerWithEmailAndPassword.rejected, (state, action) => {

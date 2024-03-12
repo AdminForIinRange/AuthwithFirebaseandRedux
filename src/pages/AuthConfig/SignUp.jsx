@@ -69,14 +69,21 @@ import {
   registerWithEmailAndPassword,
   setEmailInUse,
   sethasNotPasswordVerified,
+  setweakPassword,
 } from "../../features/Auth/authSlice";
 import { GoogleIcon } from "./ProviderIcons";
 
 export default function SignUp() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user, isLoading, error, emailInUse, hasNotPasswordVerified, weakPassword } =
-    useSelector((state) => state.auth);
+  const {
+    user,
+    isLoading,
+    error,
+    emailInUse,
+    hasNotPasswordVerified,
+    weakPassword,
+  } = useSelector((state) => state.auth);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -113,16 +120,38 @@ export default function SignUp() {
     }
   }, [user]);
 
+
+if (password.length  > 5){
+  dispatch(setweakPassword(false))
+   
+}
+
   return (
     <Box
-      py={{ base: "0", sm: "8" }}
-      px={{ base: "4", sm: "10" }}
+    py={{
+      base: "0",
+      sm: "8",
+    }}
+    px={{
+      base: "4",
+      sm: "10",
+    }}
       bg={{ base: "transparent", sm: "bg.surface" }}
       boxShadow={{ base: "none", sm: "md" }}
       borderRadius={{ base: "none", sm: "xl" }}
       mt={"30px"}
       bgColor={"white"}
-      w={"600px"}
+      w={{
+        base: "350px",
+        xsm: "350px",
+        ssm: "500px",
+        sm: "500px",
+        md: "600px",
+        lg: "600px",
+        xl: "600px",
+        xxl: "600px",
+        xxxl: "600px",
+      }}
       h={"100%"}
       p={"3%"}
     >
@@ -173,22 +202,23 @@ export default function SignUp() {
           />
         </FormControl>
 
-       { weakPassword ? <Box
-          w={"100%"}
-          h={"30px"}
-          bg={"#FEEBC8"}
-          mt={"10px"}
-          border={" 2px dotted #F6AD55"}
-        >
-          <HStack justify={"center"}>
-            <Text fontWeight={450} color={"#DD6B20"}>
-              Password should be at least 6 characters
-            </Text>
-          </HStack>
-        </Box>
-         :
-         <></>
-}
+        {weakPassword ? (
+          <Box
+            w={"100%"}
+            h={"30px"}
+            bg={"#FEEBC8"}
+            mt={"10px"}
+            border={" 2px dotted #F6AD55"}
+          >
+            <HStack justify={"center"}>
+              <Text fontWeight={450} color={"#DD6B20"}>
+                Password should be at least 6 characters
+              </Text>
+            </HStack>
+          </Box>
+        ) : (
+          <></>
+        )}
 
         <FormControl mt={"20px"}>
           <FormLabel htmlFor="password">password</FormLabel>
