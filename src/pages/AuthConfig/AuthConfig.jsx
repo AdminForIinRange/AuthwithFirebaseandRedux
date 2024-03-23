@@ -92,8 +92,7 @@ import FormSubmit from "../../components/FormSubmit";
 export default function AuthConfig() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user, isLoading, error, invalidCredential, signUp, forgotPassword } =
-    useSelector((state) => state.auth);
+  const { user, isLoading, error, invalidCredential, signUp, forgotPassword } = useSelector((state) => state.auth);
 
   const handleSignInWithGoogle = () => {
     dispatch(signInWithGoogle());
