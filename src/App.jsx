@@ -21,14 +21,13 @@ const router = createBrowserRouter(
     <Route path="/" element={<RootLayout />}>
       <Route path="Home" element={<Home />} />
       <Route path="/" element={<Auth />} />
-    </Route>
-  )
+    </Route>,
+  ),
 );
 
 function App() {
   const dispatch = useDispatch();
-  const { user } =
-    useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
@@ -39,8 +38,6 @@ function App() {
     } else if (!authToken && user) {
       // If authToken doesn't exist in localStorage but user is logged in, sign out the user
       dispatch(signOutUser());
-    
-      
     }
   }, [dispatch, user]);
 

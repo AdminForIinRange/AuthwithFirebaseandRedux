@@ -49,5 +49,5 @@ root.render(
         <App />
       </Provider>
     </React.StrictMode>
-  </ChakraProvider>
+  </ChakraProvider>,
 );

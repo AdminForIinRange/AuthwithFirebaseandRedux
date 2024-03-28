@@ -92,7 +92,8 @@ import FormSubmit from "../../components/FormSubmit";
 export default function AuthConfig() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user, isLoading, error, invalidCredential, signUp, forgotPassword } = useSelector((state) => state.auth);
+  const { user, isLoading, error, invalidCredential, signUp, forgotPassword } =
+    useSelector((state) => state.auth);
 
   const handleSignInWithGoogle = () => {
     dispatch(signInWithGoogle());
@@ -178,11 +179,8 @@ export default function AuthConfig() {
               xxxl: "600px",
             }}
             h={"100%"}
-        
           >
-           
-           <FormSubmit
-            />
+            <FormSubmit />
 
             <HStack justify={"center"} align={"center"} mt={"10px"}>
               <ButtonGroup spacing="4">

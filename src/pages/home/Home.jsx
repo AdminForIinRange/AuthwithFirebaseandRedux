@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Step,
   StepDescription,
@@ -64,9 +64,8 @@ import { auth } from "../../Config/Firebase";
 import { useDispatch, useSelector } from "react-redux";
 import { signOutUser } from "../../features/Auth/authSlice";
 
-
-
-export default function Home() {const dispatch = useDispatch();
+export default function Home() {
+  const dispatch = useDispatch();
   const { user, isLoading, error } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
@@ -83,7 +82,9 @@ export default function Home() {const dispatch = useDispatch();
   return (
     <div>
       {error && (
-        <div style={{ color: "red", textAlign: "center", marginBottom: "10px" }}>
+        <div
+          style={{ color: "red", textAlign: "center", marginBottom: "10px" }}
+        >
           Error: {error}
         </div>
       )}

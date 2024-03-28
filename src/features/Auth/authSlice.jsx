@@ -1,6 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { auth, provider } from "../../Config/Firebase";
-import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from "firebase/auth";
+import {
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  sendPasswordResetEmail,
+} from "firebase/auth";
 
 const initialState = {
   user: null,
@@ -11,9 +17,7 @@ const initialState = {
   hasNotPasswordVerified: false,
   signUp: false,
   forgotPassword: false,
-  weakPassword: false
-  
-  
+  weakPassword: false,
 };
 
 export const signInWithGoogle = createAsyncThunk(
@@ -26,41 +30,49 @@ export const signInWithGoogle = createAsyncThunk(
         email: results.user.email,
         isAuth: true,
       };
-      localStorage.setItem('authToken', authInfo.userID);
+      localStorage.setItem("authToken", authInfo.userID);
       return authInfo;
     } catch (error) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const signInWithEmailPassword = createAsyncThunk(
   "auth/signInWithEmailPassword",
   async ({ email, password }, { rejectWithValue, dispatch }) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
       const user = userCredential.user;
       const authInfo = {
         userID: user.uid,
         email: user.email,
         isAuth: true,
       };
-      localStorage.setItem('authToken', authInfo.userID);
+      localStorage.setItem("authToken", authInfo.userID);
       return authInfo;
     } catch (error) {
       if (error.code === "auth/invalid-credential") {
         dispatch(setinvalidCredential(true)); // Dispatch action to set emailInUse to true
       }
-      return rejectWithValue(error.message );
+      return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const registerWithEmailAndPassword = createAsyncThunk(
   "auth/registerWithEmailAndPassword",
   async ({ email, password }, { rejectWithValue, dispatch }) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
       const user = userCredential.user;
       const authInfo = {
         userID: user.uid,
@@ -75,24 +87,22 @@ export const registerWithEmailAndPassword = createAsyncThunk(
       if (error.code === "auth/weak-password") {
         dispatch(setweakPassword(true)); // Dispatch action to set emailInUse to true
       }
-      return rejectWithValue(error.message );
+      return rejectWithValue(error.message);
     }
-  }
+  },
 );
-
-
 
 export const signOutUser = createAsyncThunk(
   "auth/signOutUser",
   async (_, { rejectWithValue }) => {
     try {
       await signOut(auth);
-      localStorage.removeItem('authToken');
+      localStorage.removeItem("authToken");
       // No need to log state.user here, as it's not relevant to the functionality
     } catch (error) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const resetPassword = createAsyncThunk(
@@ -100,16 +110,15 @@ export const resetPassword = createAsyncThunk(
   async (email, { rejectWithValue, dispatch }) => {
     try {
       await sendPasswordResetEmail(auth, email);
-    console.log(email)
-    dispatch(setForgotPassword(true))
+      console.log(email);
+      dispatch(setForgotPassword(true));
       return null; // Success, no need to return any data
     } catch (error) {
-      console.log(email)
+      console.log(email);
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
-
 
 const authSlice = createSlice({
   name: "auth",
@@ -122,13 +131,12 @@ const authSlice = createSlice({
       state.invalidCredential = action.payload;
     },
 
-    sethasNotPasswordVerified(state, action){
+    sethasNotPasswordVerified(state, action) {
       state.hasNotPasswordVerified = action.payload;
     },
     setsignUp(state) {
       state.signUp = !state.signUp; // Toggle the value of signUp
-    }
-    ,
+    },
     setForgotPassword(state, action) {
       state.forgotPassword = action.payload; // Toggle the value of signUp
     },
@@ -138,9 +146,6 @@ const authSlice = createSlice({
     setweakPassword(state, action) {
       state.weakPassword = action.payload;
     },
-    
-    
-
   },
   extraReducers: (builder) => {
     builder
@@ -182,7 +187,6 @@ const authSlice = createSlice({
         if (action.payload.code === "auth/invalid-credential") {
           state.invalidCredential = true;
         }
-       
       })
       .addCase(registerWithEmailAndPassword.pending, (state) => {
         state.isLoading = true;
@@ -193,7 +197,6 @@ const authSlice = createSlice({
         state.error = null;
         state.emailInUse = true;
         state.weakPassword = true;
-        
       })
       .addCase(registerWithEmailAndPassword.rejected, (state, action) => {
         state.isLoading = false;
@@ -212,17 +215,22 @@ const authSlice = createSlice({
       .addCase(resetPassword.fulfilled, (state) => {
         state.isLoading = false;
         state.error = null;
-
       })
       .addCase(resetPassword.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-        
       });
-      
   },
 });
 
-export const {setUserData , setweakPassword, setEmailInUse, setinvalidCredential, sethasNotPasswordVerified, setsignUp, setForgotPassword } = authSlice.actions;
+export const {
+  setUserData,
+  setweakPassword,
+  setEmailInUse,
+  setinvalidCredential,
+  sethasNotPasswordVerified,
+  setsignUp,
+  setForgotPassword,
+} = authSlice.actions;
 
 export default authSlice.reducer;
