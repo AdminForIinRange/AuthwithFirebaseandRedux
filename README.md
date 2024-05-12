@@ -1,8 +1,16 @@
 ### Industry-Standard Authentication Page
 
-This project is an industry-standard authentication page built with React, utilizing Firebase for authentication and Redux for state management. It is designed using the Chakra UI component library, providing a modern and visually appealing user interface.
+
+
+Developed an industry standard Authentication Page utilizing Firebase and redux and designed using Chakra UI. This project 
+enabled me to master essential authentication concepts, furthering my expertise in the field concepts, enhancing my 
+expertise in the field of Auth and advance dive into Firebase.
+
+
 ![image](https://github.com/AdminForIinRange/AuthwithFirebaseandRedux/assets/91888685/cb908d15-8ba9-4952-a84b-c9f277151026)
 ![image](https://github.com/AdminForIinRange/AuthwithFirebaseandRedux/assets/91888685/643e38a3-de23-485e-b5c2-1c75b7d73df7)
+
+
 
 The authentication page allows users to sign up, log in, and manage their accounts securely. It incorporates various features such as email and password authentication, social media login, and password reset functionality.
 
